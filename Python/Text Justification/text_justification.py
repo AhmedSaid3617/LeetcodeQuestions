@@ -6,18 +6,21 @@ class Solution(object):
         :rtype: List[str]
         """
         paragraph = Paragraph(words, maxWidth)
-        print(paragraph)
+        paragraph.print_lines()
+        return paragraph.get_lines_strings()
 
 class Paragraph():
 
     def __init__(self, words, max_line_width) -> None:
+
         self.max_line_width = max_line_width
-        self.lines = list()
+        self.words = words
+        self.lines = []
 
         while(len(words)):
             line = Line(max_line_width)
             line.fill(words)
-            self.lines.append(line)
+            self.lines.append(str(line))
     
     def __str__(self) -> str:
         string = ""
@@ -26,26 +29,55 @@ class Paragraph():
             string += str(line)
         
         return string
+    
+    def print_lines(self):
+        print(self.lines)
+
+    def get_lines_strings(self):
+        lines_strings = []
+        for line in self.lines:
+            lines_strings.append(str(line))
+        return lines_strings
 
 
 
 class Line():
 
     def __init__(self, max_width) -> None:
-        self.start = ""
-        self.end = ""
-        self.__str__ = ""
         self.max_width = max_width
         self.last_line = False
-        self.words = list()
+        self.words = []
 
     def __str__(self) -> str:
 
         string = ""
-        if (not self.last_line):
-            string = "Not last\n"
+
+        # Add one space between words.
+        for i in range(len(self.words) -1):
+            self.words[i] += " "
+        
+        min_length = sum(len(word) for word in self.words)
+        spaces_count = self.max_width - min_length
+            
+        
+        if not self.last_line:
+            while spaces_count:
+                self.words[0] += " "
+                spaces_count -= 1
+
+                j = 1
+                while j < len(self.words) -1 and spaces_count:
+                    self.words[j] += " "
+                    spaces_count -=1
+                    j += 1
+        
         else:
-            string = "Last\n"
+            for i in range(spaces_count):
+                self.words[-1] += " "
+
+        for word in self.words:
+            string += word
+
         return string
 
     def fill(self, total_words):
